@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Meri Zindagi ✨</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0d0d1f;
+      --card: rgba(255,255,255,0.05);
+      --border: rgba(255,255,255,0.09);
+      --purple: #a78bfa;
+      --blue: #60a5fa;
+      --pink: #f472b6;
+      --green: #34d399;
+      --gold: #fbbf24;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    /* Top Header */
+    .header {
+      background: linear-gradient(135deg, #1a0533, #1a1a4e);
+      padding: 20px 16px 16px;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+
+    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+
+    .app-title {
+      font-size: 1.3rem; font-weight: 900;
+      background: linear-gradient(90deg, var(--purple), var(--blue));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .streak { font-size: 0.85rem; font-weight: 800; color: var(--gold); }
+
+    .date-text { font-size: 0.78rem; color: var(--muted); margin-bottom: 10px; }
+
+    .progress-bar-wrap { height: 6px; background: rgba(255,255,255,0.08); border-radius: 999px; }
+    .progress-bar-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--purple), var(--blue));
+      transition: width 0.5s ease;
+    }
+    .progress-text { font-size: 0.75rem; color: var(--muted); margin-top: 4px; text-align: right; }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(13,13,31,0.97);
+      border-top: 1px solid var(--border);
+      display: flex; z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .nav-btn {
+      flex: 1; padding: 10px 4px; border: none;
+      background: transparent; color: var(--muted);
+      font-size: 0.65rem; font-family: 'Nunito', sans-serif;
+      cursor: pointer; display: flex; flex-direction: column;
+      align-items: center; gap: 3px; font-weight: 700;
+      transition: color 0.2s;
+    }
+
+    .nav-btn.active { color: var(--purple); }
+    .nav-btn span { font-size: 1.3rem; }
+
+    /* Tabs */
+    .tab { display: none; padding: 16px; }
+    .tab.active { display: block; }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      font-size: 0.75rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); margin-bottom: 12px;
+    }
+
+    /* Quote */
+    .quote-card {
+      background: rgba(167,139,250,0.08);
+      border: 1px solid rgba(167,139,250,0.2);
+      border-radius: 14px; padding: 14px;
+      font-size: 0.88rem; color: #c4b5fd;
+      font-style: italic; line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    /* Mood */
+    .mood-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+    .mood-btn {
+      padding: 7px 12px; border-radius: 10px;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--muted);
+      font-size: 0.82rem; font-family: 'Nunito', sans-serif;
+      cursor: pointer; font-weight: 700; transition: all 0.2s;
+    }
+    .mood-btn.selected {
+      background: rgba(167,139,250,0.2);
+      border-color: var(--purple); color: var(--purple);
+    }
+
+    /* Tasks */
+    .task-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px; border-radius: 12px; margin-bottom: 8px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .task-item.done {
+      background: rgba(52,211,153,0.07);
+      border-color: rgba(52,211,153,0.2);
+    }
+    .task-check { font-size: 1.2rem; flex-shrink: 0; }
+    .task-text { flex: 1; font-size: 0.88rem; font-weight: 600; }
+    .task-item.done .task-text { text-decoration: line-through; color: var(--muted); }
+    .task-cat { font-size: 0.9rem; }
+    .task-del { background: transparent; border: none; color: var(--muted); font-size: 0.9rem; cursor: pointer; padding: 4px; }
+
+    /* Add task */
+    .add-task-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .add-input {
+      flex: 1; padding: 10px 12px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text);
+      font-size: 0.88rem; font-family: 'Nunito', sans-serif;
+      outline: none;
+    }
+    .add-input::placeholder { color: var(--muted); }
+    .add-btn {
+      padding: 10px 16px; border: none; border-radius: 10px;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      color: white; font-weight: 800; font-family: 'Nunito', sans-serif;
+      cursor: pointer; font-size: 0.9rem;
+    }
+
+    select.cat-select {
+      padding: 10px 10px;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.82rem; outline: none;
+    }
+
+    /* AI */
+    .ai-textarea {
+      width: 100%; padding: 12px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 12px; color: var(--text);
+      font-size: 0.88rem; font-family: 'Nunito', sans-serif;
+      resize: none; outline: none; line-height: 1.6;
+      min-height: 80px;
+    }
+
+    .ai-output {
+      margin-top: 14px; padding: 16px;
+      background: rgba(167,139,250,0.07);
+      border: 1px solid rgba(167,139,250,0.2);
+      border-radius: 12px; font-size: 0.88rem;
+      line-height: 1.8; color: var(--text);
+      display: none;
+    }
+    .ai-output.visible { display: block; }
+
+    .big-btn {
+      width: 100%; padding: 14px; border: none; border-radius: 12px;
+      color: white; font-size: 0.95rem; font-weight: 800;
+      font-family: 'Nunito', sans-serif; cursor: pointer;
+      margin-top: 12px; transition: opacity 0.2s;
+    }
+    .big-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+    .stat-card {
+      padding: 12px 8px; border-radius: 12px; text-align: center;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+    }
+    .stat-val { font-size: 1.1rem; font-weight: 900; }
+    .stat-label { font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
+
+    /* Quick prompts */
+    .quick-prompts { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .quick-btn {
+      padding: 6px 10px; border-radius: 8px;
+      border: 1px solid rgba(167,139,250,0.25);
+      background: rgba(167,139,250,0.07);
+      color: #c4b5fd; font-size: 0.75rem;
+      font-family: 'Nunito', sans-serif; cursor: pointer; font-weight: 600;
+    }
+
+    /* Loading dots */
+    .dots { display: none; align-items: center; gap: 6px; margin-top: 12px; color: var(--muted); font-style: italic; font-size: 0.85rem; }
+    .dots.visible { display: flex; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--purple); animation: bounce 1.2s infinite; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce { 0%,80%,100%{transform:translateY(0);opacity:.4} 40%{transform:translateY(-5px);opacity:1} }
+
+    .section-label {
+      font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--muted); margin-bottom: 8px;
+    }
+
+    .empty-state { text-align: center; padding: 20px; color: var(--muted); font-size: 0.88rem; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="app-title">✨ Meri Zindagi</div>
+    <div class="streak">🔥 <span id="streakCount">1</span> din</div>
+  </div>
+  <div class="date-text" id="dateText"></div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <div class="progress-text" id="progressText">0/0 tasks</div>
+</div>
+
+<!-- TABS -->
+<div id="tab-morning" class="tab active">
+  <div class="quote-card" id="quoteBox">💙 Loading...</div>
+
+  <div class="card">
+    <div class="card-title">🌅 Aaj kaisa feel ho raha hai?</div>
+    <div class="mood-grid">
+      <button class="mood-btn" onclick="selectMood(this, 'Achha 😊')">😊 Achha</button>
+      <button class="mood-btn" onclick="selectMood(this, 'Theek 😐')">😐 Theek</button>
+      <button class="mood-btn" onclick="selectMood(this, 'Down 😔')">😔 Thoda down</button>
+      <button class="mood-btn" onclick="selectMood(this, 'Energetic 💪')">💪 Energetic</button>
+      <button class="mood-btn" onclick="selectMood(this, 'Sleepy 😴')">😴 Sleepy</button>
+    </div>
+  </div>
+
+  <button class="big-btn" id="morningBtn"
+    style="background: linear-gradient(135deg, #f59e0b, #f97316);"
+    onclick="getMorningBriefing()">
+    🌅 Subah ki AI Briefing Lo!
+  </button>
+
+  <div class="dots" id="morningDots">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <span>AI soch raha hai...</span>
+  </div>
+
+  <div class="ai-output" id="morningOutput"></div>
+
+  <div style="margin-top:16px">
+    <div class="section-label">⭐ Aaj ke Top Tasks</div>
+    <div id="topTasksList"></div>
+  </div>
+</div>
+
+<div id="tab-tasks" class="tab">
+  <div class="add-task-row">
+    <input class="add-input" id="newTaskInput" placeholder="Naya task..." onkeydown="if(event.key==='Enter') addTask()"/>
+    <select class="cat-select" id="newTaskCat">
+      <option value="study">📚</option>
+      <option value="family">💙</option>
+      <option value="health">🌿</option>
+      <option value="career">🚀</option>
+      <option value="personal">⭐</option>
+    </select>
+    <button class="add-btn" onclick="addTask()">+</button>
+  </div>
+  <div id="allTasksList"></div>
+</div>
+
+<div id="tab-coach" class="tab">
+  <div class="card">
+    <div class="card-title">🤖 Apna AI Coach</div>
+    <div class="quick-prompts">
+      <button class="quick-btn" onclick="setCoachInput('Aaj motivation nahi aa rahi')">😔 Motivation nahi</button>
+      <button class="quick-btn" onclick="setCoachInput('Coding mein stuck hoon')">💻 Coding stuck</button>
+      <button class="quick-btn" onclick="setCoachInput('Laziness aa rahi hai laptop kholne ki')">😴 Laziness</button>
+      <button class="quick-btn" onclick="setCoachInput('Confidence kaise aayega')">💪 Confidence</button>
+      <button class="quick-btn" onclick="setCoachInput('Beti ke saath time kaise manage karun')">💙 Family time</button>
+      <button class="quick-btn" onclick="setCoachInput('Aaj ka plan batao')">📋 Aaj ka plan</button>
+    </div>
+    <textarea class="ai-textarea" id="coachInput" placeholder="Kuch bhi poochho — career, life, motivation..."></textarea>
+    <button class="big-btn"
+      style="background: linear-gradient(135deg, #6366f1, #a78bfa);"
+      onclick="askCoach()">
+      💬 Coach se Poochho
+    </button>
+    <div class="dots" id="coachDots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span>Coach soch raha hai...</span>
+    </div>
+    <div class="ai-output" id="coachOutput"></div>
+  </div>
+</div>
+
+<div id="tab-evening" class="tab">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-val" id="statDone" style="color: var(--green)">0/0</div>
+      <div class="stat-label">Tasks Done</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statPct" style="color: var(--blue)">0%</div>
+      <div class="stat-label">Progress</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statStreak" style="color: var(--gold)">1🔥</div>
+      <div class="stat-label">Streak</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🌙 Aaj kuch notes?</div>
+    <textarea class="ai-textarea" id="eveningNote" placeholder="Aaj kya achha hua... kya mushkil lagi... kal ke liye kya sochna hai..."></textarea>
+    <button class="big-btn"
+      style="background: linear-gradient(135deg, #4f46e5, #7c3aed);"
+      onclick="getEveningReview()">
+      🌙 Aaj ka Review Lo
+    </button>
+    <div class="dots" id="eveningDots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span>AI review kar raha hai...</span>
+    </div>
+    <div class="ai-output" id="eveningOutput"></div>
+  </div>
+
+  <button onclick="resetDay()" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:12px; background:transparent; color:var(--muted); font-family:'Nunito',sans-serif; font-size:0.85rem; cursor:pointer; font-weight:700;">
+    🌅 Kal ke liye ready karo →
+  </button>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-morning" onclick="showTab('morning')">
+    <span>🌅</span>Subah
+  </button>
+  <button class="nav-btn" id="nav-tasks" onclick="showTab('tasks')">
+    <span>✅</span>Tasks
+  </button>
+  <button class="nav-btn" id="nav-coach" onclick="showTab('coach')">
+    <span>🤖</span>Coach
+  </button>
+  <button class="nav-btn" id="nav-evening" onclick="showTab('evening')">
+    <span>🌙</span>Sham
+  </button>
+</div>
+
+<script>
+  // DATA
+  let tasks = JSON.parse(localStorage.getItem('mz_tasks') || 'null') || [
+    { id:1, text:"20 min coding practice", cat:"study", done:false },
+    { id:2, text:"Beti ke saath quality time", cat:"family", done:false },
+    { id:3, text:"Subah uthke paani peeyo", cat:"health", done:false },
+    { id:4, text:"Ek AI prompt improve karo", cat:"career", done:false },
+    { id:5, text:"5 min deep breathing", cat:"health", done:false },
+  ];
+
+  let mood = "";
+  let streak = parseInt(localStorage.getItem('mz_streak') || '1');
+
+  const CATS = {
+    study: { emoji:"📚", color:"#60a5fa" },
+    family: { emoji:"💙", color:"#f472b6" },
+    health: { emoji:"🌿", color:"#34d399" },
+    career: { emoji:"🚀", color:"#a78bfa" },
+    personal: { emoji:"⭐", color:"#fbbf24" },
+  };
+
+  const QUOTES = [
+    "Har mushkil ke saath aasaani hai. — Quran 94:6 💙",
+    "Tu itni baar uth chuki hai — aaj bhi uthegi. 🌸",
+    "Beti dekh rahi hai — aaj ka din uske liye hai. 💙",
+    "Sirf 20 minute. Bas shuru karo. 🚀",
+    "Confidence karne se aata hai — sochne se nahi. ⭐",
+    "Jo hua woh seedha nahi tha — par tu toh hai na. 💙",
+    "Ek kadam. Bas ek kadam aaj. 🌸",
+  ];
+
+  // INIT
+  window.onload = () => {
+    const now = new Date();
+    const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    document.getElementById('dateText').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    document.getElementById('quoteBox').textContent = "💙 " + QUOTES[Math.floor(Math.random() * QUOTES.length)];
+    document.getElementById('streakCount').textContent = streak;
+    document.getElementById('statStreak').textContent = streak + "🔥";
+    renderAll();
+  };
+
+  // TAB SWITCH
+  function showTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    document.getElementById('nav-' + name).classList.add('active');
+  }
+
+  // MOOD
+  function selectMood(btn, val) {
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    mood = val;
+  }
+
+  // RENDER
+  function saveTasks() { localStorage.setItem('mz_tasks', JSON.stringify(tasks)); }
+
+  function renderAll() {
+    const done = tasks.filter(t => t.done).length;
+    const total = tasks.length;
+    const pct = total > 0 ? Math.round(done/total*100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${done}/${total} tasks — ${pct}%`;
+    document.getElementById('statDone').textContent = `${done}/${total}`;
+    document.getElementById('statPct').textContent = pct + '%';
+
+    // Top tasks
+    const topEl = document.getElementById('topTasksList');
+    const top = tasks.slice(0,3);
+    topEl.innerHTML = top.length ? top.map(t => taskHTML(t, true)).join('') : '<div class="empty-state">Koi task nahi! Tasks tab mein add karo.</div>';
+
+    // All tasks
+    const allEl = document.getElementById('allTasksList');
+    allEl.innerHTML = tasks.length ? tasks.map(t => taskHTML(t, false)).join('') : '<div class="empty-state">Koi task nahi abhi. Upar se add karo! ✨</div>';
+  }
+
+  function taskHTML(t, isTop) {
+    const cat = CATS[t.cat] || CATS.personal;
+    return `<div class="task-item ${t.done ? 'done' : ''}" onclick="toggleTask(${t.id})">
+      <span class="task-check">${t.done ? '✅' : '⭕'}</span>
+      <span class="task-cat">${cat.emoji}</span>
+      <span class="task-text">${t.text}</span>
+      ${!isTop ? `<button class="task-del" onclick="event.stopPropagation(); deleteTask(${t.id})">🗑️</button>` : ''}
+    </div>`;
+  }
+
+  function toggleTask(id) {
+    tasks = tasks.map(t => t.id === id ? {...t, done: !t.done} : t);
+    saveTasks(); renderAll();
+  }
+
+  function deleteTask(id) {
+    tasks = tasks.filter(t => t.id !== id);
+    saveTasks(); renderAll();
+  }
+
+  function addTask() {
+    const input = document.getElementById('newTaskInput');
+    const cat = document.getElementById('newTaskCat').value;
+    if (!input.value.trim()) return;
+    tasks.push({ id: Date.now(), text: input.value.trim(), cat, done: false });
+    input.value = '';
+    saveTasks(); renderAll();
+  }
+
+  // AI CALLS
+  async function callAI(prompt, outputId, dotsId, btnId) {
+    const output = document.getElementById(outputId);
+    const dots = document.getElementById(dotsId);
+    if (btnId) document.getElementById(btnId).disabled = true;
+    dots.classList.add('visible');
+    output.classList.remove('visible');
+
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 350,
+          system: `You are a warm, personal AI life coach for a single mother who is learning AI/coding to get a remote job. She has a daughter she loves deeply. She sometimes struggles with confidence and starting tasks but is very determined. Speak in Hindi-English mix. Be warm, short (4-5 sentences max), personal and motivating. Always end with one small actionable tip.`,
+          messages: [{ role: "user", content: prompt }]
+        })
+      });
+      const data = await res.json();
+      const text = data.content?.map(c => c.text||'').join('') || 'Kuch hua. Dobara try karo.';
+      output.textContent = "🤖 " + text;
+      output.classList.add('visible');
+    } catch {
+      output.textContent = "Connection issue. Par tu kar sakti hai! 💙";
+      output.classList.add('visible');
+    }
+
+    dots.classList.remove('visible');
+    if (btnId) document.getElementById(btnId).disabled = false;
+  }
+
+  function getMorningBriefing() {
+    const pending = tasks.filter(t=>!t.done).map(t=>t.text).join(', ') || 'koi task nahi';
+    callAI(`Good morning! Mera mood aaj ${mood || 'theek'} hai. Pending tasks: ${pending}. Mujhe ek warm, motivating morning briefing do. Kahan se shuru karun batao.`, 'morningOutput', 'morningDots', 'morningBtn');
+  }
+
+  function setCoachInput(text) { document.getElementById('coachInput').value = text; }
+
+  function askCoach() {
+    const input = document.getElementById('coachInput');
+    if (!input.value.trim()) return;
+    callAI(input.value, 'coachOutput', 'coachDots', null);
+  }
+
+  function getEveningReview() {
+    const done = tasks.filter(t=>t.done).map(t=>t.text).join(', ') || 'kuch nahi';
+    const notDone = tasks.filter(t=>!t.done).map(t=>t.text).join(', ') || 'sab kar liya';
+    const note = document.getElementById('eveningNote').value || 'kuch nahi';
+    callAI(`Sham ho gayi. Kiya: ${done}. Nahi kar payi: ${notDone}. Note: ${note}. Mujhe honest aur warm review do aur kal ke liye ek tip do.`, 'eveningOutput', 'eveningDots', null);
+  }
+
+  function resetDay() {
+    if (!confirm('Kal ke liye reset karna hai? Tasks clear ho jayenge.')) return;
+    streak++;
+    localStorage.setItem('mz_streak', streak);
+    tasks = [
+      { id:1, text:"20 min coding practice", cat:"study", done:false },
+      { id:2, text:"Beti ke saath quality time", cat:"family", done:false },
+      { id:3, text:"Subah uthke paani peeyo", cat:"health", done:false },
+      { id:4, text:"Ek AI prompt improve karo", cat:"career", done:false },
+      { id:5, text:"5 min deep breathing", cat:"health", done:false },
+    ];
+    saveTasks();
+    document.getElementById('streakCount').textContent = streak;
+    document.getElementById('statStreak').textContent = streak + "🔥";
+    document.getElementById('eveningNote').value = '';
+    renderAll();
+    showTab('morning');
+    document.getElementById('quoteBox').textContent = "💙 " + QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  }
+</script>
+</body>
+</html>
